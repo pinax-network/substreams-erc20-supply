@@ -8,11 +8,31 @@ message Block {
   repeated BalanceOfStorageChange storage_changes = 3;
 }
 
-message Storage_keys{
-  repeated Storage_key storage_keys = 1;
+message StorageKeys{
+  repeated StorageKey storage_keys = 1;
 }
 
-message Storage_key
+message TotalSupplies{
+ repeated TotalSupply total_supplies = 1;
+}
+
+message TotalSupply {
+  string address = 1;
+  string supply = 2 ;
+  string transaction = 5;
+  string block_index = 6;
+
+}
+
+message EthCallSupplies{
+  repeated EthCallSupply eth_call_supplies = 1;
+}
+
+message EthCallSupply{
+  string address = 1;
+  string supply = 2;
+}
+message StorageKey
 {
   string address = 1;
   string key = 2;

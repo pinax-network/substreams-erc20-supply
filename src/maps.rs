@@ -1,72 +1,181 @@
-use crate::abi::{self};
+use crate::abi::{self, erc20};
 use crate::pb::erc20::types::v1::{
-    ApprovalEvent, BalanceOfStorageChange, Block as Erc20Block, TransferEvent,TransferEvents,StorageKeys,StorageKey
+    ApprovalEvent, Block as Erc20Block, StorageKey, StorageKeys,
+    TotalSupplies, TotalSupply, TransferEvent, TransferEvents,EthCallSupplies,EthCallSupply
 };
 use abi::erc20::{
     events::{Approval, Transfer},
-    functions::Transfer as TransferFun,
-    functions::TransferFrom as TransferFromFun,
+   // functions::Transfer as TransferFun,
+//    functions::TransferFrom as TransferFromFun,
 };
 use substreams::errors::Error;
+//use substreams::log;
+use substreams::pb::substreams::Clock;
+use substreams::store::{StoreGet, StoreGetBigInt, StoreGetProto};
 use substreams::Hex;
-use substreams::log;
-use substreams::store::{StoreGetBigInt, StoreGet, Deltas, DeltaBigInt};
 use substreams_ethereum::block_view::LogView;
 use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::Event;
-#[substreams::handlers::map]
-pub fn map_block(block: Block) -> Result<Erc20Block, Error> {
-    let (approvals, transfers) = map_events(&block);
-    let storage_changes = map_balance_of(block);
+use substreams::scalar::BigInt;
 
-    Ok(Erc20Block {
-        approvals,
-        transfers,
-        storage_changes,
-    })
+use substreams_ethereum::rpc::RpcBatch;
+
+#[substreams::handlers::map]
+pub fn map_transfers(block: Block) -> Result<TransferEvents, Error> {
+    let (_, transfers) = map_events(&block);
+   
+
+    Ok( TransferEvents{
+        transfers: transfers,
+    }
+    )
 }
 
 #[substreams::handlers::map]
-pub fn map_filter_contract(block: Erc20Block,s: StoreGetBigInt)-> Result<TransferEvents,Error>
-{
+pub fn map_filter_contract(block: Erc20Block, s: StoreGetBigInt) -> Result<EthCallSupplies, Error> {
     let mut array_transfer = vec![];
     let mut array_address = vec![];
     for transfer in block.transfers {
-
         if s.get_first(transfer.clone().address).is_some() {
-
-            if !array_address.contains(&transfer.address)
-            {
-            
+            if !array_address.contains(&transfer.address) {
                 array_address.push(transfer.clone().address);
                 array_transfer.push(transfer.clone());
             }
-           
         }
     }
 
-    Ok(TransferEvents{
-        transfers: array_transfer
+     
+    let mut responses = Vec::new();
+    let mut array_supply = Vec::new();
+    let mut batch = RpcBatch::new();
+    let mut i = 0;
+    for transfer in array_transfer.clone() {
+        batch = batch.add(
+            erc20::functions::TotalSupply {},
+            Hex::decode(transfer.address.clone()).unwrap()
+        );
+
+        i = i + 1;
+
+        if i % 50 == 0 || i == array_transfer.clone().len() - 1 {
+            let batch_response = batch.execute().unwrap().responses;
+            responses.extend(batch_response);
+            batch = RpcBatch::new();
+        }
+    }
+    
+    i = 0;
+    for rpc_response in responses.clone(){
+
+        let supply =  match RpcBatch::decode::<_, abi::erc20::functions::TotalSupply>(&rpc_response){
+              Some(data) => BigInt::from(data),
+              None => BigInt::from(0)
+          };
+          array_supply.push(EthCallSupply{address:array_transfer[i].address.clone(),supply: supply.to_string()});
+          i = i + 1;
+      }
+
+    Ok(EthCallSupplies {
+        eth_call_supplies: array_supply,
     })
 }
 
 #[substreams::handlers::map]
-pub fn map_storage_change(deltas: Deltas<DeltaBigInt>)-> Result<StorageKeys,Error>
-{
-   let mut storage_array = Vec::new();
+pub fn map_storage_key(
+    block: Block,
+    store_supply: StoreGetBigInt,
+    store_key: StoreGetProto<StorageKey>,
+) -> Result<StorageKeys, Error> {
+    let mut storage_keys = Vec::new();
+    // ETH calls
+    for calls in block.calls() {
+        // filter only successful calls
+        if calls.call.state_reverted {
+            continue;
+        }
 
-   for delta in deltas.deltas{
-    log::info!("delta {}",delta.key);
-    storage_array.push(StorageKey {
-        address: delta.key,
-        key: "".to_string(),
-        supply: delta.new_value.to_string()
+        if store_key
+            .get_first(Hex::encode(&calls.call.address))
+            .is_none()
+        {
+            // Storage changes
+
+            for storage_change in &calls.call.storage_changes {
+
+                if store_supply.get_first(Hex::encode(&storage_change.address)).is_some(){
+                    if Hex::encode(&storage_change.old_value)
+                    == store_supply
+                        .get_first(Hex::encode(&storage_change.address))
+                        .unwrap()
+                        .to_string()    
+                {
+                    storage_keys.push(StorageKey {
+                        address: Hex::encode(&storage_change.address),
+                        key: Hex::encode(&storage_change.key),
+                        supply: Hex::encode(&storage_change.new_value),
+                    })
+                }
+                }
+                
+            }
+        }
+    }
+
+    Ok(StorageKeys {
+        storage_keys: storage_keys,
     })
-   }
-   Ok(StorageKeys { storage_keys: storage_array })
-
 }
 
+#[substreams::handlers::map]
+fn map_total_supply(
+    clock: Clock,
+    block: Block,
+    newfound: StorageKeys,
+    store_key: StoreGetProto<StorageKey>,
+) -> Result<TotalSupplies, Error> {
+    let mut array_supply = Vec::new();
+
+    for calls in block.calls() {
+        // filter only successful calls
+        if calls.call.state_reverted {
+            continue;
+        }
+
+        for storage_change in &calls.call.storage_changes {
+            if store_key
+                .get_first(Hex::encode(&storage_change.address))
+                .is_some()
+            {
+                if Hex::encode(&storage_change.key)
+                    == store_key
+                        .get_first(Hex::encode(&storage_change.address))
+                        .unwrap()
+                        .key
+                {
+                    array_supply.push(TotalSupply {
+                        address: Hex::encode(&storage_change.address),
+                        supply: Hex::encode(&storage_change.new_value),
+                        transaction: Hex::encode(&calls.transaction.hash),
+                        block_index: clock.number.to_string(),
+                    })
+                }
+            }
+        }
+    }
+
+    for storage_key in newfound.storage_keys{
+        array_supply.push(TotalSupply {
+            address: storage_key.address,
+            supply: storage_key.supply,
+            transaction: Hex::encode(&block.hash),
+            block_index: clock.number.to_string(),
+        })
+    }
+
+    Ok(TotalSupplies {
+        total_supplies: array_supply,
+    })
+}
 
 pub fn map_events(block: &Block) -> (Vec<ApprovalEvent>, Vec<TransferEvent>) {
     let mut approvals = vec![];
@@ -123,8 +232,7 @@ fn decode_approval(event: Approval, log: LogView) -> ApprovalEvent {
     }
 }
 
-
-pub fn map_balance_of(block: Block) -> Vec<BalanceOfStorageChange> {
+/*pub fn map_balance_of(block: Block) -> Vec<BalanceOfStorageChange> {
     let mut storage_changes = vec![];
 
     // ETH calls
@@ -163,4 +271,4 @@ pub fn map_balance_of(block: Block) -> Vec<BalanceOfStorageChange> {
     }
 
     storage_changes
-}
+}*/

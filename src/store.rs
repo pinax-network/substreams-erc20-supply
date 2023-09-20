@@ -1,55 +1,31 @@
-use crate::abi::{self, erc20};
-use crate::pb::erc20::types::v1::TransferEvents;
+use std::str::FromStr;
 
-use substreams::Hex;
+
+use crate::pb::erc20::types::v1::{StorageKeys, EthCallSupplies,StorageKey};
+
 use substreams::scalar::BigInt;
 
-use substreams_ethereum::rpc::RpcBatch;
-use substreams::store::{StoreSetBigInt, StoreSet};
+use substreams::store::{StoreSetBigInt, StoreSet, StoreSetProto};
 use substreams::store::StoreNew;
 use substreams::log;
-pub struct TotalSupply{
-    pub address: String,
-    pub supply: BigInt
+
+
+#[substreams::handlers::store]
+fn store_total_supply(array_supply: EthCallSupplies,s: StoreSetBigInt){
+   
+
+    for supply in array_supply.eth_call_supplies{
+        log::info!("supply {}",supply.address);
+        s.set(0, supply.address, &BigInt::from_str(&supply.supply).unwrap())
+    }
+
+
 }
 
 #[substreams::handlers::store]
-fn store_total_supply(transfers: TransferEvents,s: StoreSetBigInt){
-    let mut responses = Vec::new();
-    let mut array_supply = Vec::new();
-    let mut batch = RpcBatch::new();
-    let mut i = 0;
-    for transfer in transfers.clone().transfers {
-        batch = batch.add(
-            erc20::functions::TotalSupply {},
-            Hex::decode(transfer.address.clone()).unwrap()
-        );
-
-        i = i + 1;
-
-        if i % 50 == 0 || i == transfers.clone().transfers.len() - 1 {
-            let batch_response = batch.execute().unwrap().responses;
-            responses.extend(batch_response);
-            batch = RpcBatch::new();
-        }
+fn store_key(storage_keys: StorageKeys,s: StoreSetProto<StorageKey>){
+    for element in storage_keys.storage_keys{
+        s.set(0, &element.address, &element)
     }
-    
-    i = 0;
-    for rpc_response in responses.clone(){
-
-        let supply =  match RpcBatch::decode::<_, abi::erc20::functions::TotalSupply>(&rpc_response){
-              Some(data) => BigInt::from(data),
-              None => BigInt::from(0)
-          };
-          array_supply.push(TotalSupply{address:transfers.transfers[i].address.clone(),supply: supply});
-          i = i + 1;
-      }
-
-
-    for supply in array_supply{
-        log::info!("supply {}",supply.address);
-        s.set(0, supply.address, &supply.supply)
-    }
-
-
 }
+

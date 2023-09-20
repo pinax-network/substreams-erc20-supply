@@ -17,6 +17,38 @@ pub struct StorageKeys {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TotalSupplies {
+    #[prost(message, repeated, tag="1")]
+    pub total_supplies: ::prost::alloc::vec::Vec<TotalSupply>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TotalSupply {
+    #[prost(string, tag="1")]
+    pub address: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub supply: ::prost::alloc::string::String,
+    #[prost(string, tag="5")]
+    pub transaction: ::prost::alloc::string::String,
+    #[prost(string, tag="6")]
+    pub block_index: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EthCallSupplies {
+    #[prost(message, repeated, tag="1")]
+    pub eth_call_supplies: ::prost::alloc::vec::Vec<EthCallSupply>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct EthCallSupply {
+    #[prost(string, tag="1")]
+    pub address: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub supply: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct StorageKey {
     #[prost(string, tag="1")]
     pub address: ::prost::alloc::string::String,

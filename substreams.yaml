@@ -22,24 +22,24 @@ protobuf:
     - ./proto/v1
 
 modules:
-  - name: map_block
+  - name: map_transfers
     kind: map
     initialBlock: 18176700
     doc: Extracts 'Approval' & 'Transfer' events from the block and storage changes from 'transfer' and 'transferFrom' functions.
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:erc20.types.v1.Block
+      type: proto:erc20.types.v1.TransferEvents
       
   - name: map_filter_contract
     kind: map
     initialBlock: 18176700
     inputs:
-      - map: map_block
+      - map: map_transfers
       - store: store_total_supply
         mode: get
     output:
-      type: proto:erc20.types.v1.TransferEvents
+      type: proto:erc20.types.v1.EthCallSupplies
 
   - name: store_total_supply
     kind: store
@@ -48,37 +48,62 @@ modules:
     valueType : bigint
     updatePolicy : set
     inputs:
-      - map: map_block
+      - map: map_filter_contract
 
-  - name: map_storage_change
+  - name: store_key
+    kind: store
+    initialBlock: 18176700
+    doc: Store key of totalSupply from call
+    valueType : string
+    updatePolicy : set
+    inputs:
+      - map: map_storage_key
+
+  - name: map_storage_key
     kind: map
     initialBlock: 18176700
     inputs:
+      - source: sf.ethereum.type.v2.Block
       - store: store_total_supply
-        mode: deltas
+        mode: get
+      - store: store_key
+        mode: get
     output:
-      type: proto:erc20.types.v1.Storage_keys
+      type: proto:erc20.types.v1.StorageKeys
   
-  - name: graph_out
+
+  - name: map_total_supply
     kind: map
     initialBlock: 18176700
     inputs:
       - source: sf.substreams.v1.Clock
-      - map: map_block
+      - source: sf.ethereum.type.v2.Block
+      - map: map_storage_key
+      - store: store_key
+        mode: get
     output:
-      type: proto:sf.substreams.sink.entity.v1.EntityChanges
+      type: proto:erc20.types.v1.TotalSupplies
+
+  #- name: graph_out
+   # kind: map
+  #  initialBlock: 18176700
+  #  inputs:
+  #    - source: sf.substreams.v1.Clock
+  #    - map: map_transfers
+  #  output:
+  #    type: proto:sf.substreams.sink.entity.v1.EntityChanges
 
   # - name: prom_out
   #   kind: map
   #   inputs:
-  #     - map: map_block
+  #     - map: map_transfers
   #   output:
   #     type: proto:pinax.substreams.sink.prometheus.v1.PrometheusOperations
 
-  - name: kv_out
-    kind: map
-    initialBlock: 18176700
-    inputs:
-      - map: map_block
-    output:
-      type: proto:sf.substreams.sink.kv.v1.KVOperations
+  #- name: kv_out
+   # kind: map
+   # initialBlock: 18176700
+   # inputs:
+   #   - map: map_transfers
+   # output:
+   #   type: proto:sf.substreams.sink.kv.v1.KVOperations
