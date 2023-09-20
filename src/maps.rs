@@ -9,11 +9,11 @@ use abi::erc20::{
 };
 use substreams::errors::Error;
 use substreams::Hex;
+use substreams::log;
 use substreams::store::{StoreGetBigInt, StoreGet, Deltas, DeltaBigInt};
 use substreams_ethereum::block_view::LogView;
 use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::Event;
-
 #[substreams::handlers::map]
 pub fn map_block(block: Block) -> Result<Erc20Block, Error> {
     let (approvals, transfers) = map_events(&block);
@@ -25,6 +25,48 @@ pub fn map_block(block: Block) -> Result<Erc20Block, Error> {
         storage_changes,
     })
 }
+
+#[substreams::handlers::map]
+pub fn map_filter_contract(block: Erc20Block,s: StoreGetBigInt)-> Result<TransferEvents,Error>
+{
+    let mut array_transfer = vec![];
+    let mut array_address = vec![];
+    for transfer in block.transfers {
+
+        if s.get_first(transfer.clone().address).is_some() {
+
+            if !array_address.contains(&transfer.address)
+            {
+            
+                array_address.push(transfer.clone().address);
+                array_transfer.push(transfer.clone());
+            }
+           
+        }
+    }
+
+    Ok(TransferEvents{
+        transfers: array_transfer
+    })
+}
+
+#[substreams::handlers::map]
+pub fn map_storage_change(deltas: Deltas<DeltaBigInt>)-> Result<StorageKeys,Error>
+{
+   let mut storage_array = Vec::new();
+
+   for delta in deltas.deltas{
+    log::info!("delta {}",delta.key);
+    storage_array.push(StorageKey {
+        address: delta.key,
+        key: "".to_string(),
+        supply: delta.new_value.to_string()
+    })
+   }
+   Ok(StorageKeys { storage_keys: storage_array })
+
+}
+
 
 pub fn map_events(block: &Block) -> (Vec<ApprovalEvent>, Vec<TransferEvent>) {
     let mut approvals = vec![];
@@ -49,36 +91,6 @@ pub fn map_events(block: &Block) -> (Vec<ApprovalEvent>, Vec<TransferEvent>) {
     (approvals, transfers)
 }
 
-pub fn map_filter_contract(block: Erc20Block,s: StoreGetBigInt)-> Result<TransferEvents,Error>
-{
-    let mut array_transfer = vec![];
-    for transfer in block.transfers {
-
-        if s.get_first(transfer.clone().address).is_some() {
-            array_transfer.push(transfer.clone());
-        }
-    }
-
-    Ok(TransferEvents{
-        transfers: array_transfer
-    })
-}
-
-
-pub fn map_storage_change(deltas: Deltas<DeltaBigInt>)-> Result<StorageKeys,Error>
-{
-   let mut storage_array = Vec::new();
-
-   for delta in deltas.deltas{
-    storage_array.push(StorageKey {
-        address: delta.key,
-        key: "".to_string(),
-        supply: delta.new_value.to_string()
-    })
-   }
-   Ok(StorageKeys { storage_keys: storage_array })
-
-}
 fn decode_transfer(event: Transfer, log: LogView) -> TransferEvent {
     TransferEvent {
         // contract address
@@ -110,6 +122,7 @@ fn decode_approval(event: Approval, log: LogView) -> ApprovalEvent {
         block_index: log.log.block_index.into(),
     }
 }
+
 
 pub fn map_balance_of(block: Block) -> Vec<BalanceOfStorageChange> {
     let mut storage_changes = vec![];

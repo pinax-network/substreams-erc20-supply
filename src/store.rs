@@ -7,7 +7,7 @@ use substreams::scalar::BigInt;
 use substreams_ethereum::rpc::RpcBatch;
 use substreams::store::{StoreSetBigInt, StoreSet};
 use substreams::store::StoreNew;
-
+use substreams::log;
 pub struct TotalSupply{
     pub address: String,
     pub supply: BigInt
@@ -33,7 +33,7 @@ fn store_total_supply(transfers: TransferEvents,s: StoreSetBigInt){
             batch = RpcBatch::new();
         }
     }
-
+    
     i = 0;
     for rpc_response in responses.clone(){
 
@@ -42,12 +42,14 @@ fn store_total_supply(transfers: TransferEvents,s: StoreSetBigInt){
               None => BigInt::from(0)
           };
           array_supply.push(TotalSupply{address:transfers.transfers[i].address.clone(),supply: supply});
+          i = i + 1;
       }
 
 
-      for supply in array_supply{
+    for supply in array_supply{
+        log::info!("supply {}",supply.address);
         s.set(0, supply.address, &supply.supply)
-      }
+    }
 
 
 }

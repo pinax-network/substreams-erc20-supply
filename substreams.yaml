@@ -24,6 +24,7 @@ protobuf:
 modules:
   - name: map_block
     kind: map
+    initialBlock: 18176700
     doc: Extracts 'Approval' & 'Transfer' events from the block and storage changes from 'transfer' and 'transferFrom' functions.
     inputs:
       - source: sf.ethereum.type.v2.Block
@@ -32,15 +33,18 @@ modules:
       
   - name: map_filter_contract
     kind: map
+    initialBlock: 18176700
     inputs:
       - map: map_block
+      - store: store_total_supply
+        mode: get
     output:
       type: proto:erc20.types.v1.TransferEvents
 
   - name: store_total_supply
     kind: store
+    initialBlock: 18176700
     doc: Store temporary total supply
-    initialBlock: 1
     valueType : bigint
     updatePolicy : set
     inputs:
@@ -48,13 +52,16 @@ modules:
 
   - name: map_storage_change
     kind: map
+    initialBlock: 18176700
     inputs:
       - store: store_total_supply
+        mode: deltas
     output:
       type: proto:erc20.types.v1.Storage_keys
   
   - name: graph_out
     kind: map
+    initialBlock: 18176700
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_block
@@ -70,6 +77,7 @@ modules:
 
   - name: kv_out
     kind: map
+    initialBlock: 18176700
     inputs:
       - map: map_block
     output:
