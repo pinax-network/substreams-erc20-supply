@@ -25,29 +25,10 @@ $ make gui
 
 ```mermaid
 graph TD;
-  map_balance_changes[map: map_balance_changes];
   sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> map_balance_changes;
-  map_valid_balance_changes[map: map_valid_balance_changes];
   map_balance_changes --> map_valid_balance_changes;
   map_token_supply[map: map_token_supply];
   map_valid_balance_changes --> map_token_supply;
-  balance_changes:map_balance_changes[map: balance_changes:map_balance_changes];
-  sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> balance_changes:map_balance_changes;
-  balance_changes:map_valid_balance_changes[map: balance_changes:map_valid_balance_changes];
-  balance_changes:map_balance_changes --> balance_changes:map_valid_balance_changes;
-  balance_changes:map_unknown_balance_changes[map: balance_changes:map_unknown_balance_changes];
-  balance_changes:map_balance_changes --> balance_changes:map_unknown_balance_changes;
-  balance_changes:db_out[map: balance_changes:db_out];
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> balance_changes:db_out;
-  balance_changes:map_balance_changes --> balance_changes:db_out;
-  balance_changes:graph_out[map: balance_changes:graph_out];
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> balance_changes:graph_out;
-  balance_changes:map_balance_changes --> balance_changes:graph_out;
-  balance_changes:store_valid_balance_changes[store: balance_changes:store_valid_balance_changes];
-  balance_changes:map_balance_changes --> balance_changes:store_valid_balance_changes;
-  balance_changes:balance_change_stats[map: balance_changes:balance_change_stats];
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> balance_changes:balance_change_stats;
-  balance_changes:store_valid_balance_changes --> balance_changes:balance_change_stats;
 ```
 
 ### Modules
