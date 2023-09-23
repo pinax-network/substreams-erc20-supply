@@ -2,83 +2,63 @@ syntax = "proto3";
 
 package erc20.types.v1;
 
-message Block {
-  repeated ApprovalEvent approvals = 1;
-  repeated TransferEvent transfers = 2;
-  repeated BalanceOfStorageChange storage_changes = 3;
+message BalanceChanges {
+  repeated BalanceChange balance_changes = 1;
 }
 
-message StorageKeys{
-  repeated StorageKey storage_keys = 1;
+enum BalanceChangeType {
+  TYPE_UNKNOWN = 0; // cannot determine balance change
+  TYPE_1 = 1; // easy case where storage change is in the same call as the Transfer call
+  TYPE_2 = 2; // storage change is in a different call than the Transfer call
 }
 
-message TotalSupplies{
- repeated TotalSupply total_supplies = 1;
-}
-
-message TotalSupply {
-  string address = 1;
-  string supply = 2 ;
-  string transaction = 5;
-  string block_index = 6;
-
-}
-
-message EthCallSupplies{
-  repeated EthCallSupply eth_call_supplies = 1;
-}
-
-message EthCallSupply{
-  string address = 1;
-  string supply = 2;
-}
-message StorageKey
-{
-  string address = 1;
-  string key = 2;
-  string supply = 3;
-}
-message TransferEvents {
-  repeated TransferEvent transfers = 1;
-}
-
-message TransferEvent {
-  // contract address
-  string address = 1;
-
-  // event payload
-  string from = 2;
-  string to = 3;
-  string value = 4;
-
-  // trace information
-  string transaction = 5;
-  uint64 block_index = 6;
-}
-
-message ApprovalEvent {
-  // contract address
-  string address = 1;
-
-  // event payload
+message BalanceChange {
+  string contract = 1;
   string owner = 2;
-  string spender = 3;
-  string value = 4;
+  string old_balance = 3;
+  string new_balance = 4;
 
-  // trace information
   string transaction = 5;
-  uint64 block_index = 6;
+  string storage_key = 6;
+  uint32 call_index = 7;
+
+  string transfer_value = 8;
+
+  BalanceChangeType change_type = 9;
 }
 
-message BalanceOfStorageChange {
-  // contract address
-  string address = 1;
-  string method = 2;
+message ValidBalanceChanges {
+  repeated ValidBalanceChange valid_balance_changes = 1;
+}
 
-  // storage changes
-  string owner = 4;
-  string balance = 5;
+message ValidBalanceChange {
+  string contract = 1;
+  string owner = 2;
+  string old_balance = 3;
+  string new_balance = 4;
 
-  // trace information
-  string transaction = 6;
+  string transaction = 5;
+}
+
+message UnknownBalanceChanges {
+  repeated UnknownBalanceChange unknown_balance_changes = 1;
+}
+
+message UnknownBalanceChange {
+  string contract = 1;
+  string owner = 2;
+  string transaction = 3;
+  uint32 call_index = 4;
+  string transfer_value = 5;
+}
+
+
+message BalanceChangeStats {
+  uint64 type0_count = 1;
+  uint64 type1_count = 2;
+  uint64 type2_count = 3;
+
+  uint64 total_count = 42;
+  string valid_rate = 43;
+  uint64 block_number = 99;
 }

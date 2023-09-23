@@ -1,82 +1,52 @@
 specVersion: v0.1.0
 package:
-  name: substreams-erc20-total-supply
+  name: erc20_supply
   version: v0.1.0
   url: https://github.com/pinax-network/substreams-erc20-total-supply
   doc: ERC-20 Token Supply
 
 imports:
   entities: https://github.com/streamingfast/substreams-sink-entity-changes/releases/download/v1.3.0/substreams-sink-entity-changes-v1.3.0.spkg
+  balance_changes: https://github.com/streamingfast/substreams-erc20-balance-changes/releases/download/v0.0.5/erc20-balance-changes-v0.0.5.spkg
 
 binaries:
   default:
     type: wasm/rust-v1
-    file: ./target/wasm32-unknown-unknown/release/erc20.wasm
+    file: ./target/wasm32-unknown-unknown/release/erc20_supply.wasm
+  balance_changes:
+    type: wasm/rust-v1
+    file: ./erc20-balance-changes.wasm
 
 protobuf:
   files:
+    - erc20.supply.proto
     - erc20.proto
   importPaths:
     - ./proto/v1
 
 modules:
-  - name: map_transfers
+  - name: map_balance_changes
     kind: map
-    initialBlock: 18176700
-    doc: Extracts 'Approval' & 'Transfer' events from the block and storage changes from 'transfer' and 'transferFrom' functions.
+    doc: Extracts ERC20 balance changes
+    binary: balance_changes
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:erc20.types.v1.TransferEvents
+      type: proto:erc20.types.v1.BalanceChanges
 
-  - name: map_filter_contract
+  - name: map_valid_balance_changes
     kind: map
-    initialBlock: 18176700
+    doc: Extracts ERC20 balance changes
+    binary: balance_changes
     inputs:
-      - map: map_transfers
-      - store: store_total_supply
-        mode: get
+      - map: map_balance_changes
     output:
-      type: proto:erc20.types.v1.EthCallSupplies
+      type: proto:erc20.types.v1.ValidBalanceChanges
 
-  - name: store_total_supply
-    kind: store
-    initialBlock: 18176700
-    doc: Store temporary total supply
-    valueType : bigint
-    updatePolicy : set
-    inputs:
-      - map: map_filter_contract
-
-  - name: store_key
-    kind: store
-    initialBlock: 18176700
-    doc: Store key of totalSupply from call
-    valueType : string
-    updatePolicy : set
-    inputs:
-      - map: map_storage_key
-
-  - name: map_storage_key
+  - name: map_token_supply
     kind: map
-    initialBlock: 18176700
+    doc: Extracts ERC20 token total supply
     inputs:
-      - source: sf.ethereum.type.v2.Block
-      - store: store_total_supply
-        mode: get
-      - store: store_key
-        mode: get
+      - map: map_valid_balance_changes
     output:
-      type: proto:erc20.types.v1.StorageKeys
-
-  - name: map_total_supply
-    kind: map
-    initialBlock: 18176700
-    inputs:
-      - source: sf.substreams.v1.Clock
-      - source: sf.ethereum.type.v2.Block
-      - map: map_storage_key
-      - store: store_key
-        mode: get
-    output:
-      type: proto:erc20.types.v1.TotalSupplies
+      type: proto:erc20.supply.types.v1.TotalSupplies
