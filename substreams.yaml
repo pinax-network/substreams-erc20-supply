@@ -50,3 +50,11 @@ modules:
       - map: map_valid_balance_changes
     output:
       type: proto:erc20.supply.types.v1.TotalSupplies
+
+  - name: graph_out
+    kind: map
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_token_supply
+    output:
+      type: proto:sf.substreams.sink.entity.v1.EntityChanges

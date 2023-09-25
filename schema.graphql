@@ -1,0 +1,8 @@
+# Log
+type TotalSupply @entity(immutable: true) {
+  id: ID!
+  address: String!
+  supply: String!
+  block_num: BigInt!
+  timestamp: BigInt!
+}
