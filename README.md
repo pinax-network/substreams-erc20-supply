@@ -1,6 +1,6 @@
-# ERC-20 Token Supply Substreams
+# `ERC-20` Token Supply Substreams
 
-> Extends [ERC-20 Balance Changes](https://github.com/streamingfast/substreams-erc20-balance-changes) with Total Token Supply.
+> Extends [ERC-20 Balance Changes](https://github.com/streamingfast/substreams-erc20-balance-changes) with total Token Supply.
 
 ## Quickstart
 
@@ -11,7 +11,7 @@ $ make
 $ make gui
 ```
 
-## Releases
+## Releases `.spkg`
 
 - https://github.com/pinax-network/substreams-erc20-supply/releases
 
@@ -20,6 +20,25 @@ $ make gui
 - [EIPS: ERC-20 Token Standard ](https://eips.ethereum.org/EIPS/eip-20)
 - [OpenZeppelin implementation](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/9b3710465583284b8c4c5d2245749246bb2e0094/contracts/token/ERC20/ERC20.sol)
 - [ConsenSys implementation](https://github.com/ConsenSys/Tokens/blob/fdf687c69d998266a95f15216b1955a4965a0a6d/contracts/eip20/EIP20.sol)
+
+## Map Outputs
+
+### `map_token_supply`
+
+```json
+{
+  "totalSupplies": [
+    {
+      "address": "dac17f958d2ee523a2206206994597c13d831ec7",
+      "supply": "39025187376288180"
+    },
+    {
+      "address": "c944e90c64b2c07662a292be6244bdf05cda44a7",
+      "supply": "10759041473295613153705888512"
+    }
+    ...
+}
+```
 
 ### Mermaid graph
 
