@@ -1,4 +1,8 @@
-# `ERC-20` Token Supply Substreams
+# `ERC-20` Token Supply [Substreams](https://substreams.streamingfast.io)
+
+[![Build Status](https://github.com/pinax-network/substreams-erc20-supply/actions/workflows/test.yml/badge.svg)](https://github.com/pinax-network/substreams-erc20-supply/actions/workflows/test.yml)
+![Version](https://img.shields.io/github/v/release/pinax-network/substreams-erc20-supply)
+![License](https://img.shields.io/github/license/pinax-network/substreams-erc20-supply)
 
 > Extends [ERC-20 Balance Changes](https://github.com/streamingfast/substreams-erc20-balance-changes) with total Token Supply.
 
