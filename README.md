@@ -1,19 +1,19 @@
 # ERC-20 Token Supply Substreams
 
-> Extends [ERC-20 Balance Changes](https://github.com/streamingfast/substreams-erc20-balance-changes) with Token Supply
+> Extends [ERC-20 Balance Changes](https://github.com/streamingfast/substreams-erc20-balance-changes) with Total Token Supply.
 
 ## Quickstart
 
 ```
-$ gh repo clone pinax-network/substreams-erc20-total-supply
-$ cd substreams-erc20-total-supply
+$ gh repo clone pinax-network/substreams-erc20-supply
+$ cd substreams-erc20-supply
 $ make
 $ make gui
 ```
 
 ## Releases
 
-- https://github.com/pinax-network/substreams-erc20-total-supply/releases
+- https://github.com/pinax-network/substreams-erc20-supply/releases
 
 ## References
 - [Ethereum Docs: ERC-20 Token Standard](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/)
@@ -25,10 +25,10 @@ $ make gui
 
 ```mermaid
 graph TD;
-  sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> map_balance_changes;
+  sf.ethereum.type.v2.Block --> map_balance_changes;
   map_balance_changes --> map_valid_balance_changes;
-  map_token_supply[map: map_token_supply];
   map_valid_balance_changes --> map_token_supply;
+  map_token_supply --> graph_out;
 ```
 
 ### Modules
@@ -40,9 +40,15 @@ Doc: ERC-20 Token Supply
 Modules:
 ----
 Name: map_token_supply
-Initial block: 1397553
+Initial block: 0
 Kind: map
 Output Type: proto:erc20.supply.types.v1.TotalSupplies
-Hash: 87ad90dfb4649470424b6259b141339db719eba6
+Hash: 2823c53215a935dd31d6acdfc69d9ea05f47e3c1
 Doc: Extracts ERC20 token total supply
+
+Name: graph_out
+Initial block: 0
+Kind: map
+Output Type: proto:sf.substreams.sink.entity.v1.EntityChanges
+Hash: f962b399a17485487567db433ea8292f1444aeb7
 ```

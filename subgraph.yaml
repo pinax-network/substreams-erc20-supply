@@ -1,5 +1,5 @@
 specVersion: 0.0.6
-description: ERC20 Total Supply Ethereum
+description: ERC-20 Token Supply
 repository: https://github.com/pinax-network/substreams-erc20-supply.git
 schema:
   file: ./schema.graphql

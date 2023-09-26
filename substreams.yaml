@@ -2,7 +2,7 @@ specVersion: v0.1.0
 package:
   name: erc20_supply
   version: v0.1.0
-  url: https://github.com/pinax-network/substreams-erc20-total-supply
+  url: https://github.com/pinax-network/substreams-erc20-supply
   doc: ERC-20 Token Supply
 
 imports:
@@ -20,11 +20,11 @@ binaries:
 protobuf:
   files:
     - erc20.supply.proto
-    - erc20.proto
   importPaths:
     - ./proto/v1
 
 modules:
+  # import from https://github.com/streamingfast/substreams-erc20-balance-changes
   - name: map_balance_changes
     kind: map
     doc: Extracts ERC20 balance changes
@@ -34,6 +34,7 @@ modules:
     output:
       type: proto:erc20.types.v1.BalanceChanges
 
+  # import from https://github.com/streamingfast/substreams-erc20-balance-changes
   - name: map_valid_balance_changes
     kind: map
     doc: Extracts ERC20 balance changes
@@ -51,6 +52,7 @@ modules:
     output:
       type: proto:erc20.supply.types.v1.TotalSupplies
 
+  # sink from https://github.com/streamingfast/substreams-sink-entity-changes
   - name: graph_out
     kind: map
     inputs:

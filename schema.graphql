@@ -1,8 +1,17 @@
-# Log
+" ERC-20 Token Total Supply "
 type TotalSupply @entity(immutable: true) {
+  " ID will be the token address "
   id: ID!
+
+  " Token address for which the total supply is being tracked"
   address: String!
-  supply: String!
-  block_num: BigInt!
+
+  " Total supply in raw units "
+  supply: BigInt!
+
+  " Unix timestamp of the last time the balance was updated "
   timestamp: BigInt!
+
+  " Block number of the last time the balance was updated "
+  block: BigInt!
 }

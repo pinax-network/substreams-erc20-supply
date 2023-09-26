@@ -10,6 +10,7 @@ pub struct TotalSupplies {
 pub struct TotalSupply {
     #[prost(string, tag="1")]
     pub address: ::prost::alloc::string::String,
+    /// Uint256
     #[prost(string, tag="2")]
     pub supply: ::prost::alloc::string::String,
 }

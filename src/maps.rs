@@ -2,7 +2,7 @@ use crate::abi;
 use crate::pb::erc20::types::v1::ValidBalanceChanges;
 use crate::pb::erc20::supply::types::v1::{TotalSupplies, TotalSupply};
 use substreams::log;
-use substreams::{errors::Error, Hex};
+use substreams::{errors::Error, Hex, scalar::BigInt};
 
 #[substreams::handlers::map]
 pub fn map_token_supply(balance_changes: ValidBalanceChanges) -> Result<TotalSupplies, Error> {
@@ -15,15 +15,15 @@ pub fn map_token_supply(balance_changes: ValidBalanceChanges) -> Result<TotalSup
         items.push(TotalSupply {
             address,
             supply: supply.unwrap().into(),
-        })
+        });
     }
     Ok(TotalSupplies { total_supplies: items})
 }
 
 // ETH Call to retrieve total supply
-pub fn get_total_supply(address: String) -> Option<substreams::scalar::BigInt> {
+pub fn get_total_supply(address: String) -> Option<BigInt> {
     let call = abi::erc20::functions::TotalSupply{};
-    log::info!("get_total_supply    : {:?}", address);
+    log::info!("get_total_supply: {:?}", address);
     let hex = Hex::decode(address).unwrap();
     call.call(hex)
 }
@@ -36,6 +36,6 @@ pub fn filter_contracts(balance_changes: ValidBalanceChanges) -> Vec<String> {
     }
     contracts.sort();
     contracts.dedup();
-    log::info!("Contracts: {:?}", contracts);
+    log::info!("filter_contracts: {:?}", contracts);
     contracts
 }

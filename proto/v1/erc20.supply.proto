@@ -8,5 +8,5 @@ message TotalSupplies {
 
 message TotalSupply {
   string address = 1;
-  string supply = 2;
+  string supply = 2; // Uint256
 }
