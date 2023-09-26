@@ -10,7 +10,7 @@ pub fn graph_out(clock: Clock, supply: TotalSupplies) -> Result<EntityChanges, E
     let block = clock.number.to_string();
     let timestamp = clock.timestamp.unwrap().seconds.to_string();
 
-    for event in supply.total_supplies {
+    for event in supply.items {
         let address = &event.address;
         tables
             .create_row("TotalSupply", address)

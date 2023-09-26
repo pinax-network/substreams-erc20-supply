@@ -3,7 +3,7 @@ syntax = "proto3";
 package erc20.supply.types.v1;
 
 message TotalSupplies {
-  repeated TotalSupply total_supplies = 1;
+  repeated TotalSupply items = 1;
 }
 
 message TotalSupply {

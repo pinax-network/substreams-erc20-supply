@@ -27,7 +27,7 @@ $ make gui
 
 ```json
 {
-  "totalSupplies": [
+  "items": [
     {
       "address": "dac17f958d2ee523a2206206994597c13d831ec7",
       "supply": "39025187376288180"
@@ -63,12 +63,12 @@ Name: map_token_supply
 Initial block: 0
 Kind: map
 Output Type: proto:erc20.supply.types.v1.TotalSupplies
-Hash: 2823c53215a935dd31d6acdfc69d9ea05f47e3c1
+Hash: aece54b8435b37d2565b54f54d2a185a38ec9460
 Doc: Extracts ERC20 token total supply
 
 Name: graph_out
 Initial block: 0
 Kind: map
 Output Type: proto:sf.substreams.sink.entity.v1.EntityChanges
-Hash: f962b399a17485487567db433ea8292f1444aeb7
+Hash: abbce463fe542510df4030b10e1559fa2082864a
 ```

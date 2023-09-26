@@ -10,14 +10,14 @@ pub fn map_token_supply(balance_changes: ValidBalanceChanges) -> Result<TotalSup
     let contracts = filter_contracts(balance_changes);
 
     for address in contracts {
-        let supply = get_total_supply(address.clone());
-        if supply.is_none() { continue; }
-        items.push(TotalSupply {
-            address,
-            supply: supply.unwrap().into(),
-        });
+        match get_total_supply(address.clone()) {
+            Some(supply) => {
+                items.push(TotalSupply { address, supply: supply.to_string() })
+            },
+            None => {},
+        }
     }
-    Ok(TotalSupplies { total_supplies: items})
+    Ok(TotalSupplies { items })
 }
 
 // ETH Call to retrieve total supply

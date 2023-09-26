@@ -3,7 +3,7 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TotalSupplies {
     #[prost(message, repeated, tag="1")]
-    pub total_supplies: ::prost::alloc::vec::Vec<TotalSupply>,
+    pub items: ::prost::alloc::vec::Vec<TotalSupply>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
