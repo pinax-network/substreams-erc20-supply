@@ -4,7 +4,7 @@
 ![Version](https://img.shields.io/github/v/release/pinax-network/substreams-erc20-supply)
 ![License](https://img.shields.io/github/license/pinax-network/substreams-erc20-supply)
 
-> Extends [ERC-20 Balance Changes](https://github.com/streamingfast/substreams-erc20-balance-changes) with Total Token Supply.
+> Extends [ERC-20 Balance Changes](https://github.com/streamingfast/substreams-erc20-balance-changes) with token supply.
 
 ## Quickstart
 
