@@ -45,6 +45,40 @@ $ make gui
 }
 ```
 
+### `graph_out`
+
+```json
+{
+  "entityChanges": [
+    {
+      "entity": "TotalSupply",
+      "id": "c944e90c64b2c07662a292be6244bdf05cda44a7",
+      "ordinal": "0",
+      "operation": "OPERATION_CREATE",
+      "fields": [
+        {
+          "name": "address",
+          "newValue": { "string": "c944e90c64b2c07662a292be6244bdf05cda44a7" }
+        },
+        {
+          "name": "block",
+          "newValue": { "bigint": "18242188" }
+        },
+        {
+          "name": "supply",
+          "newValue": { "bigint": "10759041473295613153705888512" }
+        },
+        {
+          "name": "timestamp",
+          "newValue": { "bigint": "1696000391" }
+        }
+      ]
+    },
+    ...
+  ]
+}
+```
+
 ### Mermaid graph
 
 ```mermaid
