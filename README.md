@@ -83,10 +83,18 @@ $ make gui
 
 ```mermaid
 graph TD;
-  sf.ethereum.type.v2.Block --> map_balance_changes;
+  map_balance_changes[map: map_balance_changes];
+  sf.ethereum.type.v2.Block[source: sf.ethereum.type.v2.Block] --> map_balance_changes;
+  map_valid_balance_changes[map: map_valid_balance_changes];
   map_balance_changes --> map_valid_balance_changes;
+  map_token_supply[map: map_token_supply];
   map_valid_balance_changes --> map_token_supply;
+  graph_out[map: graph_out];
+  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> graph_out;
   map_token_supply --> graph_out;
+  db_out[map: db_out];
+  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> db_out;
+  map_token_supply --> db_out;
 ```
 
 ### Modules
@@ -101,12 +109,18 @@ Name: map_token_supply
 Initial block: 0
 Kind: map
 Output Type: proto:erc20.supply.types.v1.TotalSupplies
-Hash: aece54b8435b37d2565b54f54d2a185a38ec9460
+Hash: e6c300002c12d6dccec347bbb732d6a1dbb918e2
 Doc: Extracts ERC20 token total supply
 
 Name: graph_out
 Initial block: 0
 Kind: map
 Output Type: proto:sf.substreams.sink.entity.v1.EntityChanges
-Hash: abbce463fe542510df4030b10e1559fa2082864a
+Hash: 7956de6075b10ea296fe13f530b25fe4bfe5ad97
+
+Name: db_out
+Initial block: 0
+Kind: map
+Output Type: proto:sf.substreams.database.v1.DatabaseChanges
+Hash: 376e11ca6a831d86b51fbeb4393f3f5ac66b35f7
 ```
