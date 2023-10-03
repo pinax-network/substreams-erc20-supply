@@ -1,4 +1,4 @@
-specVersion: v0.1.1
+specVersion: v0.1.0
 package:
   name: erc20_supply
   version: v0.1.1
