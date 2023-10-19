@@ -1,16 +1,6 @@
-create table supply
-(
-    id          text not null constraint supply_pk primary key,
-    address     text,
-    supply      text,
-    block       bigint,
-    timestamp   timestamp
-);
-
-create table cursors
-(
-    id         text not null constraint cursor_pk primary key,
-    cursor     text,
-    block_num  bigint,
-    block_id   text
-);
+CREATE TABLE IF NOT EXISTS TotalSupply  (
+    address FixedString(40),
+    supply UInt256,
+)
+ENGINE = MergeTree()
+ORDER BY (address)

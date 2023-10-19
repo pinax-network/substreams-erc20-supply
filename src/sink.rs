@@ -24,7 +24,7 @@ pub fn graph_out(clock: Clock, supply: TotalSupplies) -> Result<EntityChanges, E
 }
 
 
-#[substreams::handlers::map]
+/*#[substreams::handlers::map]
 pub fn db_out(clock: Clock, supply: TotalSupplies) -> Result<DatabaseChanges, Error> {
     let block = clock.number.to_string();
     let timestamp = clock.timestamp.unwrap().seconds.to_string();
@@ -41,6 +41,6 @@ pub fn db_out(clock: Clock, supply: TotalSupplies) -> Result<DatabaseChanges, Er
         .change("timestamp", (None, timestamp.clone()));
     }
     Ok(database_changes)
-}
+}*/
 
 
