@@ -6,6 +6,13 @@
 
 > Extends [ERC-20 Balance Changes](https://github.com/streamingfast/substreams-erc20-balance-changes) with token supply.
 
+### First block containing ERC20 Transfers
+| Chain                                                                                           | Block number                                            |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| ETH                                                                                             | 913 198                                                 |
+| Polygon                                                                                         | 2764                                                    |
+| BSC                                                                                             | 64 253                                                  |
+
 ## Quickstart
 
 ```
@@ -124,3 +131,4 @@ Kind: map
 Output Type: proto:sf.substreams.database.v1.DatabaseChanges
 Hash: 376e11ca6a831d86b51fbeb4393f3f5ac66b35f7
 ```
+
