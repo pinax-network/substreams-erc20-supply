@@ -13,18 +13,19 @@ pub fn graph_out(clock: Clock, supply: TotalSupplies) -> Result<EntityChanges, E
 
     for event in supply.items {
         let address = &event.address;
+        let id  = format!("{}-{}", address.clone(), block.clone());
         tables
-            .create_row("TotalSupply", address)
+            .create_row("TotalSupply", id)
             .set("address", address)
             .set_bigint("supply", &event.supply)
-            .set_bigint("block", &block)
+            .set_bigint("block_number", &block)
             .set_bigint("timestamp", &timestamp);
     }
     Ok(tables.to_entity_changes())
 }
 
 
-/*#[substreams::handlers::map]
+#[substreams::handlers::map]
 pub fn db_out(clock: Clock, supply: TotalSupplies) -> Result<DatabaseChanges, Error> {
     let block = clock.number.to_string();
     let timestamp = clock.timestamp.unwrap().seconds.to_string();
@@ -32,15 +33,16 @@ pub fn db_out(clock: Clock, supply: TotalSupplies) -> Result<DatabaseChanges, Er
   
     for event in supply.items {
         let address = &event.address;
-       
+        let id  = format!("{}-{}", address.clone(), block.clone());
+
         database_changes
-        .push_change("supply", format!("{}:{}", address.clone(), block.clone()), 0, Operation::Create)
+        .push_change("TotalSupply",id, 0, Operation::Create)
         .change("address", (None, address))
         .change("supply", (None, event.supply))
-        .change("block", (None,block.clone() ))
+        .change("block_number", (None,block.clone() ))
         .change("timestamp", (None, timestamp.clone()));
     }
     Ok(database_changes)
-}*/
+}
 
 

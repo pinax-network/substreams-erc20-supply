@@ -27,11 +27,11 @@ info:
 
 .PHONY: run
 run:
-	substreams run graph_out -e eth.substreams.pinax.network:9000 -s -1000
+	substreams run graph_out -e eth.substreams.pinax.network:443-s -1000	
 
 .PHONY: gui
 gui:
-	substreams gui graph_out -e eth.substreams.pinax.network:9000 -s -1000
+	substreams gui graph_out -e eth.substreams.pinax.network:443 -s -1000
 
 .PHONE: deploy_local
 deploy_local: pack
