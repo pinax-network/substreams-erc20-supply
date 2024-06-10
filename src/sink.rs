@@ -34,7 +34,7 @@ pub fn db_out(clock: Clock, supply: TotalSupplies) -> Result<DatabaseChanges, Er
 
     for event in supply.items {
         let address = &event.address;
-        let id  = HashMap::from([("address".to_string(),address.clone()),("block_number".to_string(), block.clone())]);
+        let id  = HashMap::from([("address".to_string(),address.clone()),("supply".to_string(), event.supply.clone())]);
         
         database_changes
         .push_change_composite("TotalSupply",id, 0, Operation::Create)

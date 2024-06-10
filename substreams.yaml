@@ -30,6 +30,13 @@ modules:
     output:
       type: proto:erc20.supply.types.v1.TotalSupplies
 
+  - name: index_supply
+    kind: blockIndex
+    inputs:
+      - map: map_token_supply
+    output:
+      type: proto:sf.substreams.index.v1.Keys
+
   # sink from https://github.com/streamingfast/substreams-sink-entity-changes
   - name: graph_out
     kind: map
@@ -44,6 +51,11 @@ modules:
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_token_supply
+    blockFilter:
+      module: index_supply
+      query:
+        string: suuply
+        params: false
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
 
