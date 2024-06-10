@@ -35,7 +35,6 @@ pub fn map_token_supply(balance_changes: ValidBalanceChanges) -> Result<TotalSup
 // ETH Call to retrieve total supply
 pub fn get_total_supply(address: String) -> Option<BigInt> {
     let call = abi::erc20::functions::TotalSupply{};
-    log::info!("get_total_supply: {:?}", address);
     let hex = Hex::decode(address).unwrap();
     call.call(hex)
 }
@@ -48,6 +47,5 @@ pub fn filter_contracts(balance_changes: ValidBalanceChanges) -> Vec<String> {
     }
     contracts.sort();
     contracts.dedup();
-    log::info!("filter_contracts: {:?}", contracts);
     contracts
 }
