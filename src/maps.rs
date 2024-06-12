@@ -1,7 +1,6 @@
 use crate::abi;
 use crate::pb::erc20::types::v1::ValidBalanceChanges;
 use crate::pb::erc20::supply::types::v1::{TotalSupplies, TotalSupply};
-use substreams::log;
 use substreams::{errors::Error, Hex, scalar::BigInt};
 use substreams::pb::sf::substreams::index::v1::Keys;
 
