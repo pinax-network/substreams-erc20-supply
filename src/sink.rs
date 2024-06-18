@@ -1,29 +1,9 @@
 
 use substreams::{errors::Error, pb::substreams::Clock};
-use substreams_entity_change::tables::Tables;
-use substreams_entity_change::pb::entity::EntityChanges;
 use std::collections::HashMap;
 use crate::pb::erc20::supply::types::v1::TotalSupplies;
 use substreams_database_change::pb::database::{table_change::Operation, DatabaseChanges};
 
-#[substreams::handlers::map]
-pub fn graph_out(clock: Clock, supply: TotalSupplies) -> Result<EntityChanges, Error> {
-    let mut tables = Tables::new();
-    let block = clock.number.to_string();
-    let timestamp = clock.timestamp.unwrap().seconds.to_string();
-
-    for event in supply.items {
-        let address = &event.address;
-        let id  = format!("{}-{}", address.clone(), block.clone());
-        tables
-            .create_row("TotalSupply", id)
-            .set("address", address)
-            .set_bigint("supply", &event.supply)
-            .set_bigint("block_number", &block)
-            .set_bigint("timestamp", &timestamp);
-    }
-    Ok(tables.to_entity_changes())
-}
 
 
 #[substreams::handlers::map]
