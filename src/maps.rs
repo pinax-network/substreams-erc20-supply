@@ -2,10 +2,10 @@ use crate::abi;
 use crate::pb::erc20::types::v1::ValidBalanceChanges;
 use crate::pb::erc20::supply::types::v1::{TotalSupplies, TotalSupply};
 use substreams::{errors::Error, Hex, scalar::BigInt};
-use substreams::pb::sf::substreams::index::v1::Keys;
+//use substreams::pb::sf::substreams::index::v1::Keys;
 
 
-#[substreams::handlers::map]
+/*#[substreams::handlers::map]
 fn index_supply(s: TotalSupplies) -> Result<Keys, Error> {
     Ok(match s.items.is_empty() {
         true => Keys::default(),
@@ -13,7 +13,7 @@ fn index_supply(s: TotalSupplies) -> Result<Keys, Error> {
             keys: vec!["supply".to_string()]
         },
     })
-}
+}*/
 
 #[substreams::handlers::map]
 pub fn map_token_supply(balance_changes: ValidBalanceChanges) -> Result<TotalSupplies, Error> {
