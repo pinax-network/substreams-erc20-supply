@@ -6,7 +6,7 @@ package:
   doc: ERC-20 Token Supply
 
 imports:
-  balance_changes: https://github.com/pinax-network/substreams-erc20-balance-changes/releases/download/0.0.5/erc20-balance-changes-v0.0.5.spkg
+  balance_changes: https://github.com/pinax-network/substreams-erc20-balance-changes/releases/download/v1.2.2/erc20-balance-changes-v1.2.2.spkg
   sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
   database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.3.1/substreams-database-change-v1.3.1.spkg
 binaries:
@@ -25,7 +25,7 @@ modules:
     kind: map
     doc: Extracts ERC20 token total supply
     inputs:
-      - map: balance_changes:map_valid_balance_changes
+      - map: balance_changes:balance_changes:map_valid_balance_changes
     output:
       type: proto:erc20.supply.types.v1.TotalSupplies
 
@@ -38,6 +38,7 @@ modules:
 
   - name: db_out
     kind: map
+    initialBlock: 482801
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_token_supply
