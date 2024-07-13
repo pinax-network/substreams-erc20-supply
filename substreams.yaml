@@ -25,7 +25,7 @@ modules:
     kind: map
     doc: Extracts ERC20 token total supply
     inputs:
-      - map: balance_changes:balance_changes:map_valid_balance_changes
+      - map: balance_changes:map_valid_balance_changes
     output:
       type: proto:erc20.supply.types.v1.TotalSupplies
 
