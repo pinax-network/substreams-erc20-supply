@@ -21,8 +21,7 @@ pub fn db_out(clock: Clock, supply: TotalSupplies) -> Result<DatabaseChanges, Er
         .change("contract", (None, address))
         .change("supply", (None, event.supply))
         .change("block_num", (None,block.clone() ))
-        .change("timestamp", (None, timestamp.clone()))
-        .change("version",  (None, 1));
+        .change("timestamp", (None, timestamp.clone()));
     }
     Ok(database_changes)
 }
