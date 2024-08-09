@@ -88,26 +88,22 @@ $ make gui
 }
 ```
 
-### Mermaid graph
-
 ```mermaid
 graph TD;
   map_token_supply[map: map_token_supply];
   balance_changes:map_valid_balance_changes --> map_token_supply;
-  map_token_supply --> index_supply;
-  graph_out[map: graph_out];
-  sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> graph_out;
-  map_token_supply --> graph_out;
+  store_supply[store: store_supply];
+  map_token_supply --> store_supply;
   db_out[map: db_out];
   sf.substreams.v1.Clock[source: sf.substreams.v1.Clock] --> db_out;
-  map_token_supply --> db_out;
+  store_supply -- deltas --> db_out;
 ```
 
 ### Modules
 
 ```yaml
 Package name: erc20_supply
-Version: v0.1.0
+Version: v0.1.8
 Doc: ERC-20 Token Supply
 Modules:
 ----
@@ -116,30 +112,23 @@ Initial block: 0
 Kind: map
 Input: map: balance_changes:map_valid_balance_changes
 Output Type: proto:erc20.supply.types.v1.TotalSupplies
-Hash: 1a52db6b9bdebc701a25f8a08a1327ac6ce8c766
+Hash: 6d670090dd23e7197e90a091d714f981e6adbe15
 Doc:  Extracts ERC20 token total supply
 
-Name: index_supply
+Name: store_supply
 Initial block: 0
-Kind: index
+Kind: store
 Input: map: map_token_supply
-Output Type: proto:sf.substreams.index.v1.Keys
-Hash: 8f3990934d95fce8b9fadfdef645f9e83c266e45
-
-Name: graph_out
-Initial block: 0
-Kind: map
-Input: source: sf.substreams.v1.Clock
-Input: map: map_token_supply
-Output Type: proto:sf.substreams.sink.entity.v1.EntityChanges
-Hash: b8127494230b953cf72fa45ee4b86f4a2b2c1bdf
+Value Type: string
+Update Policy: set
+Hash: 94b9609de07ce414aca6bf261483ccce68a6b592
+Doc:  Stores last supply seen
 
 Name: db_out
 Initial block: 0
 Kind: map
 Input: source: sf.substreams.v1.Clock
-Input: map: map_token_supply
-Block Filter: (using *index_supply*): `&{suuply}`
+Input: store: store_supply
 Output Type: proto:sf.substreams.sink.database.v1.DatabaseChanges
-Hash: 6c74a94ce5e0b0ef71e0f8344587d3eb0e5cb99e
+Hash: c9f1a2ca2d47ed888839e6d3d2e9fb12006bdef6
 ```
