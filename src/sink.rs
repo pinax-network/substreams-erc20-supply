@@ -15,7 +15,7 @@ pub fn db_out(clock: Clock, supply: TotalSupplies,s: StoreGetString) -> Result<D
     for event in supply.items {
         let address = &event.address;
 
-        if s.get_at(0, address).unwrap() == event.supply {
+        if s.get_at(0, address).unwrap() != event.supply {
             let id  = HashMap::from([("address".to_string(),address.clone()),("block".to_string(), block.clone())]);
         
         database_changes
