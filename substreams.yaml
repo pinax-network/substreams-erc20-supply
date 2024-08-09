@@ -47,9 +47,8 @@ modules:
     kind: map
     inputs:
       - source: sf.substreams.v1.Clock
-      - map: map_token_supply
       - store: store_supply
-        mode: get
+        mode: deltas
     #  blockFilter:
     #    module: index_supply
     #    query:
