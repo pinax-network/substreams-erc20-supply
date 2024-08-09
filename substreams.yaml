@@ -29,6 +29,13 @@ modules:
     output:
       type: proto:erc20.supply.types.v1.TotalSupplies
 
+  - name: store_supply
+    kind: store
+    doc: Stores last supply seen
+    valueType: string
+    updatePolicy: set
+    inputs:
+      - map: map_token_supply
   # - name: index_supply
   #   kind: blockIndex
   #   inputs:
@@ -41,6 +48,8 @@ modules:
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_token_supply
+      - store: store_supply
+        mode: get
     #  blockFilter:
     #    module: index_supply
     #    query:

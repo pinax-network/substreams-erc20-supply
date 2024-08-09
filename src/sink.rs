@@ -1,5 +1,5 @@
 
-use substreams::{errors::Error, pb::substreams::Clock};
+use substreams::{errors::Error, pb::substreams::Clock, store::{StoreGet, StoreGetString}};
 use std::collections::HashMap;
 use crate::pb::erc20::supply::types::v1::TotalSupplies;
 use substreams_database_change::pb::database::{table_change::Operation, DatabaseChanges};
@@ -7,14 +7,16 @@ use substreams_database_change::pb::database::{table_change::Operation, Database
 
 
 #[substreams::handlers::map]
-pub fn db_out(clock: Clock, supply: TotalSupplies) -> Result<DatabaseChanges, Error> {
+pub fn db_out(clock: Clock, supply: TotalSupplies,s: StoreGetString) -> Result<DatabaseChanges, Error> {
     let block = clock.number.to_string();
     let timestamp = clock.timestamp.unwrap().seconds.to_string();
     let mut database_changes: DatabaseChanges = Default::default();
 
     for event in supply.items {
         let address = &event.address;
-        let id  = HashMap::from([("address".to_string(),address.clone()),("block".to_string(), block.clone())]);
+
+        if s.get_at(0, address).unwrap() == event.supply {
+            let id  = HashMap::from([("address".to_string(),address.clone()),("block".to_string(), block.clone())]);
         
         database_changes
         .push_change_composite("supply",id, 0, Operation::Create)
