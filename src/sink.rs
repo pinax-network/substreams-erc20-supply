@@ -25,6 +25,7 @@ pub fn db_out(clock: Clock, supply: TotalSupplies,s: StoreGetString) -> Result<D
         .change("block_num", (None,block.clone() ))
         .change("timestamp", (None, timestamp.clone()));
     }
+}
     Ok(database_changes)
 }
 
